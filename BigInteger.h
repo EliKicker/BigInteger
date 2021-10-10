@@ -24,9 +24,20 @@ class BigInteger {
         void Debug();
         //End Debug
 
+        BigInteger();
         BigInteger(string s);
         static void Print(BigInteger a);
         //static BigInteger Parse(string s);
+
+        //operators
+        friend std::ostream& operator<<(std::ostream &os, const BigInteger &a);
+        friend std::istream& operator>>(std::istream &is, BigInteger &a);
+        //end operators
 };
+
+//operator prototypes
+std::ostream& operator<<(std::ostream &os, const BigInteger &a);
+std::istream& operator>>(std::istream &is, BigInteger &a);
+//end operator prototypes
 
 #endif //BIGINTEGER_BIGINTEGER_H

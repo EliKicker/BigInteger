@@ -6,9 +6,9 @@ using std::endl;
 
 int main() {
     BigInteger newBigInt("-123879431782134432678237845678");
-    int i = 0;
-    BigInteger::Print(newBigInt);
-    newBigInt.Debug();
-    std::cout << &i << std::endl;
+    cout << newBigInt << endl;
+    BigInteger a;
+    std::cin >> a;
+    cout << a << endl;
     return 0;
 }

@@ -61,10 +61,11 @@ string BigInteger::DecToBin(string dec) {
 
 string BigInteger::getDecimalString(std::vector<uint64> a) {
     string result;
-    while (result.empty() || (result.size() & 0x3F) != 0) result = '0' + result;
+    //while (result.empty() || (result.size() & 0x3F) != 0) result = '0' + result;
     for (int i = 0; i < a.size() * 64; i += 64) {
         uint64 num = a[a.size() - 1 - i / 64];
         for (int k = 0; k < 64; k++) {
+            if (result[0] != '0') result = '0' + result;
             //Check cols
             for (int j = result.size() - 1; j >= 0; j--) {
                 if (result[j] - 48 >= 5) {
@@ -83,6 +84,8 @@ string BigInteger::getDecimalString(std::vector<uint64> a) {
     if ((s = result.find_first_not_of('0')) != std::string::npos) result.erase(0, s);
     return result;
 }
+
+BigInteger::BigInteger() = default;
 
 BigInteger::BigInteger(string s) {
     int sign = (s[0] == '-') ? 1 : 0;
@@ -106,5 +109,17 @@ void BigInteger::Print(BigInteger a) {
         std::cout << ((sign == 1) ? "-" : "");
         std::cout << getDecimalString(a.bigInt);
     }
-    std::cout << std::endl;
+    //std::cout << std::endl;
+}
+
+std::ostream &operator<<(std::ostream &os, const BigInteger &a) {
+    BigInteger::Print(a);
+    return os;
+}
+
+std::istream &operator>>(std::istream &is, BigInteger &a) {
+    string s;
+    std::getline(is, s);
+    a = BigInteger(s);
+    return is;
 }
