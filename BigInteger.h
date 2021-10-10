@@ -25,19 +25,61 @@ class BigInteger {
         //End Debug
 
         BigInteger();
-        BigInteger(string s);
-        static void Print(BigInteger a);
+        explicit BigInteger(string s);
+        static void Print(std::ostream &os, BigInteger a);
         //static BigInteger Parse(string s);
 
         //operators
         friend std::ostream& operator<<(std::ostream &os, const BigInteger &a);
         friend std::istream& operator>>(std::istream &is, BigInteger &a);
+        friend bool operator<(BigInteger a, BigInteger b);
+        friend bool operator>(BigInteger a, BigInteger b);
+        friend bool operator==(BigInteger a, BigInteger b);
+        friend bool operator<=(BigInteger a, BigInteger b);
+        friend bool operator>=(BigInteger a, BigInteger b);
+        friend bool operator<(BigInteger a, int b);
+        friend bool operator>(BigInteger a, int b);
+        friend bool operator==(BigInteger a, int b);
+        friend bool operator<=(BigInteger a, int b);
+        friend bool operator>=(BigInteger a, int b);
+        friend bool operator<(int a, BigInteger b);
+        friend bool operator>(int a, BigInteger b);
+        friend bool operator==(int a, BigInteger b);
+        friend bool operator<=(int a, BigInteger b);
+        friend bool operator>=(int a, BigInteger b);
+        friend BigInteger operator+(BigInteger a, BigInteger b);
+        friend BigInteger operator+(BigInteger a, int b);
+        friend BigInteger operator+(int a, BigInteger b);
+        friend BigInteger operator++(BigInteger &a);
+        friend BigInteger operator+=(BigInteger &a, BigInteger b);
+        friend BigInteger operator+=(BigInteger &a, int b);
         //end operators
 };
 
 //operator prototypes
 std::ostream& operator<<(std::ostream &os, const BigInteger &a);
 std::istream& operator>>(std::istream &is, BigInteger &a);
+bool operator<(BigInteger a, BigInteger b);
+bool operator>(BigInteger a, BigInteger b);
+bool operator==(BigInteger a, BigInteger b);
+bool operator<=(BigInteger a, BigInteger b);
+bool operator>=(BigInteger a, BigInteger b);
+bool operator<(BigInteger a, int b);
+bool operator>(BigInteger a, int b);
+bool operator==(BigInteger a, int b);
+bool operator<=(BigInteger a, int b);
+bool operator>=(BigInteger a, int b);
+bool operator<(int a, BigInteger b);
+bool operator>(int a, BigInteger b);
+bool operator==(int a, BigInteger b);
+bool operator<=(int a, BigInteger b);
+bool operator>=(int a, BigInteger b);
+BigInteger operator+(BigInteger a, BigInteger b);
+BigInteger operator+(BigInteger a, int b);
+BigInteger operator+(int a, BigInteger b);
+BigInteger operator++(BigInteger &a);
+BigInteger operator+=(BigInteger &a, BigInteger b);
+BigInteger operator+=(BigInteger &a, int b);
 //end operator prototypes
 
 #endif //BIGINTEGER_BIGINTEGER_H

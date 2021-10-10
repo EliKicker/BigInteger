@@ -18,18 +18,19 @@ void BigInteger::TrimLeadingZeros(std::vector<uint64> &a) {
     while (a.size() > 1 && a.back() == 0) a.pop_back();
 }
 
-int BigInteger::takeSign(std::vector<uint64> &a) {
+int BigInteger::takeSign(std::vector<uint64> &a) { //0 - pos && 1 - neg
     if ((int) ((a[a.size() - 1] & 0x8000000000000000) >> 63) == 1) {
         a[a.size() - 1] = a[a.size() - 1] ^ 0x8000000000000000;
         TrimLeadingZeros(a);
-        return 1;
+        return -1;
     } else {
         TrimLeadingZeros(a);
-        return 0;
+        return 1;
     }
 }
 
 void BigInteger::setSign(int sign) {
+    (sign == -1) ? sign = 1 : sign = 0; //0 - pos && 1 - neg
     if ((bigInt[bigInt.size() - 1] & 0x8000000000000000) == 0) {
         bigInt[bigInt.size() - 1] ^= sign * 0x8000000000000000;
     } else {
@@ -88,7 +89,7 @@ string BigInteger::getDecimalString(std::vector<uint64> a) {
 BigInteger::BigInteger() = default;
 
 BigInteger::BigInteger(string s) {
-    int sign = (s[0] == '-') ? 1 : 0;
+    int sign = (s[0] == '-') ? -1 : 1;
     s = DecToBin(s);
     while ((s.size() & 0x3F) != 0) s = '0' + s; //64 bit Padding
     for (int i = 0; i < s.size(); i += 64) {
@@ -101,19 +102,18 @@ BigInteger::BigInteger(string s) {
     setSign(sign);
 }
 
-void BigInteger::Print(BigInteger a) {
+void BigInteger::Print(std::ostream &os, BigInteger a) {
     string result;
     int sign;
     if (!a.bigInt.empty()) {
         sign = takeSign(a.bigInt);
-        std::cout << ((sign == 1) ? "-" : "");
-        std::cout << getDecimalString(a.bigInt);
+        os << ((sign == -1) ? "-" : "");
+        os << getDecimalString(a.bigInt);
     }
-    //std::cout << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &os, const BigInteger &a) {
-    BigInteger::Print(a);
+    BigInteger::Print(os, a);
     return os;
 }
 
@@ -122,4 +122,105 @@ std::istream &operator>>(std::istream &is, BigInteger &a) {
     std::getline(is, s);
     a = BigInteger(s);
     return is;
+}
+
+bool operator<(BigInteger a, BigInteger b) {
+    int sgn_a = BigInteger::takeSign(a.bigInt), sgn_b = BigInteger::takeSign(b.bigInt);
+    if (sgn_a == -1 && sgn_b != -1) {a.setSign(sgn_a); b.setSign(sgn_b); return true;}
+    if (sgn_a != -1 && sgn_b == -1) {a.setSign(sgn_a); b.setSign(sgn_b); return false;}
+    if (a.bigInt.size() != b.bigInt.size()) {a.setSign(sgn_a); b.setSign(sgn_b); return (sgn_a == -1 && sgn_b == -1) ? a.bigInt.size() > b.bigInt.size() : a.bigInt.size() < b.bigInt.size();}
+    for (int i = a.bigInt.size() - 1; i >= 0; i--) {
+        if (a.bigInt[i] != b.bigInt[i]) {a.setSign(sgn_a); b.setSign(sgn_b); return (sgn_a == -1 && sgn_b == -1) ? a.bigInt[i] > b.bigInt[i] : a.bigInt[i] < b.bigInt[i];}
+    }
+    a.setSign(sgn_a);
+    b.setSign(sgn_b);
+    return false;
+}
+
+bool operator>(BigInteger a, BigInteger b) {
+    return b < a;
+}
+
+bool operator==(BigInteger a, BigInteger b) {
+    int sgn_a = BigInteger::takeSign(a.bigInt), sgn_b = BigInteger::takeSign(b.bigInt);
+    if (sgn_a != sgn_b) {a.setSign(sgn_a); b.setSign(sgn_b); return false;}
+    if (a.bigInt.size() != b.bigInt.size()) {a.setSign(sgn_a); b.setSign(sgn_b); return false;}
+    for (int i = a.bigInt.size() - 1; i >= 0; i--) {
+        if (a.bigInt[i] != b.bigInt[i]) {a.setSign(sgn_a); b.setSign(sgn_b); return false;}
+    }
+    a.setSign(sgn_a);
+    b.setSign(sgn_b);
+    return true;
+}
+
+bool operator<=(BigInteger a, BigInteger b) {
+    return a < b || a == b;
+}
+
+bool operator>=(BigInteger a, BigInteger b) {
+    return b < a || b == a;
+}
+
+bool operator<(BigInteger a, int b) {
+    return a < BigInteger(std::to_string(b));
+}
+
+bool operator>(BigInteger a, int b) {
+    return BigInteger(std::to_string(b)) < a;
+}
+
+bool operator==(BigInteger a, int b) {
+    return a == BigInteger(std::to_string(b));
+}
+
+bool operator<=(BigInteger a, int b) {
+    return a <= BigInteger(std::to_string(b));
+}
+
+bool operator>=(BigInteger a, int b) {
+    return a >= BigInteger(std::to_string(b));
+}
+
+bool operator<(int a, BigInteger b) {
+    return BigInteger(std::to_string(a)) < b;
+}
+
+bool operator>(int a, BigInteger b) {
+    return b < BigInteger(std::to_string(a));
+}
+
+bool operator==(int a, BigInteger b) {
+    return BigInteger(std::to_string(a)) == b;
+}
+
+bool operator<=(int a, BigInteger b) {
+    return BigInteger(std::to_string(a)) <= b;
+}
+
+bool operator>=(int a, BigInteger b) {
+    return BigInteger(std::to_string(a)) >= b;
+}
+
+BigInteger operator+(BigInteger a, BigInteger b) {
+    return BigInteger();
+}
+
+BigInteger operator+(BigInteger a, int b) {
+    return BigInteger();
+}
+
+BigInteger operator+(int a, BigInteger b) {
+    return BigInteger();
+}
+
+BigInteger operator++(BigInteger &a) {
+    return BigInteger();
+}
+
+BigInteger operator+=(BigInteger &a, BigInteger b) {
+    return BigInteger();
+}
+
+BigInteger operator+=(BigInteger &a, int b) {
+    return BigInteger();
 }
