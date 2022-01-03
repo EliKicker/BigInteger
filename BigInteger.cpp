@@ -18,6 +18,15 @@ void BigInteger::TrimLeadingZeros(std::vector<uint64> &a) {
     while (a.size() > 1 && a.back() == 0) a.pop_back();
 }
 
+void BigInteger::setSign(int sign) {
+    (sign == -1) ? sign = 1 : sign = 0; //0 - pos && 1 - neg
+    if ((bigInt[bigInt.size() - 1] & 0x8000000000000000) == 0) {
+        bigInt[bigInt.size() - 1] ^= sign * 0x8000000000000000;
+    } else {
+        bigInt.insert(bigInt.end(), sign * 0x8000000000000000);
+    }
+}
+
 int BigInteger::takeSign(std::vector<uint64> &a) { //0 - pos && 1 - neg
     if ((int) ((a[a.size() - 1] & 0x8000000000000000) >> 63) == 1) {
         a[a.size() - 1] = a[a.size() - 1] ^ 0x8000000000000000;
@@ -26,15 +35,6 @@ int BigInteger::takeSign(std::vector<uint64> &a) { //0 - pos && 1 - neg
     } else {
         TrimLeadingZeros(a);
         return 1;
-    }
-}
-
-void BigInteger::setSign(int sign) {
-    (sign == -1) ? sign = 1 : sign = 0; //0 - pos && 1 - neg
-    if ((bigInt[bigInt.size() - 1] & 0x8000000000000000) == 0) {
-        bigInt[bigInt.size() - 1] ^= sign * 0x8000000000000000;
-    } else {
-        bigInt.insert(bigInt.end(), sign * 0x8000000000000000);
     }
 }
 
@@ -109,7 +109,18 @@ void BigInteger::Print(std::ostream &os, BigInteger a) {
         sign = takeSign(a.bigInt);
         os << ((sign == -1) ? "-" : "");
         os << getDecimalString(a.bigInt);
+        a.setSign(sign);
     }
+}
+
+BigInteger BigInteger::max(BigInteger a, BigInteger b) {
+    if (b < a) return a;
+    return b;
+}
+
+BigInteger BigInteger::min(BigInteger a, BigInteger b) {
+    if (b < a) return b;
+    return a;
 }
 
 std::ostream &operator<<(std::ostream &os, const BigInteger &a) {
@@ -202,7 +213,43 @@ bool operator>=(int a, BigInteger b) {
 }
 
 BigInteger operator+(BigInteger a, BigInteger b) {
-    return BigInteger();
+    int sign;
+    if (BigInteger::takeSign(a.bigInt) == 1) { // a -> positive
+        if (BigInteger::takeSign(b.bigInt) == 1) { // b -> positive
+            sign = 1;
+        } else { // a - b
+            a.setSign(1);
+            b.setSign(1);
+            return a - b;
+        }
+    } else { // a -> negative
+        if (BigInteger::takeSign(b.bigInt) == 1) { // b -> positive
+            a.setSign(1);
+            b.setSign(1);
+            return b - a;
+        } else { // - (a + b)
+            sign = -1;
+        }
+    }
+
+    //Pad vectors to same length
+    while (a.bigInt.size() > b.bigInt.size()) b.bigInt.insert(b.bigInt.end(), 0);
+    while (b.bigInt.size() > a.bigInt.size()) a.bigInt.insert(a.bigInt.end(), 0);
+
+    BigInteger result;
+    for (int i = 0; i < a.bigInt.size(); i++) {
+        uint64 n = 0;
+        uint64 c = 0;
+        for (int j = 0; j < 64; j++) {
+            n += (((a.bigInt[i] >> j) & 1) ^ ((b.bigInt[i] >> j) & 1) ^ c) << j;
+            c = ((((a.bigInt[i] >> j) & 1) | ((b.bigInt[i] >> j) & 1)) & c) | (((a.bigInt[i] >> j) & 1) & ((b.bigInt[i] >> j) & 1));
+        }
+        result.bigInt.insert(result.bigInt.end(), n);
+        if (i + 1 == a.bigInt.size() && c != 0) result.bigInt.insert(result.bigInt.end(), c);
+    }
+
+    result.setSign(sign);
+    return result;
 }
 
 BigInteger operator+(BigInteger a, int b) {
@@ -222,5 +269,29 @@ BigInteger operator+=(BigInteger &a, BigInteger b) {
 }
 
 BigInteger operator+=(BigInteger &a, int b) {
+    return BigInteger();
+}
+
+BigInteger operator-(BigInteger a, BigInteger b) {
+    //Work in progess
+}
+
+BigInteger operator-(BigInteger a, int b) {
+    return BigInteger();
+}
+
+BigInteger operator-(int a, BigInteger b) {
+    return BigInteger();
+}
+
+BigInteger operator--(BigInteger &a) {
+    return BigInteger();
+}
+
+BigInteger operator-=(BigInteger &a, BigInteger b) {
+    return BigInteger();
+}
+
+BigInteger operator-=(BigInteger &a, int b) {
     return BigInteger();
 }

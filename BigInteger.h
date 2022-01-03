@@ -27,6 +27,8 @@ class BigInteger {
         BigInteger();
         explicit BigInteger(string s);
         static void Print(std::ostream &os, BigInteger a);
+        static BigInteger max(BigInteger a, BigInteger b);
+        static BigInteger min(BigInteger a, BigInteger b);
         //static BigInteger Parse(string s);
 
         //operators
@@ -53,6 +55,12 @@ class BigInteger {
         friend BigInteger operator++(BigInteger &a);
         friend BigInteger operator+=(BigInteger &a, BigInteger b);
         friend BigInteger operator+=(BigInteger &a, int b);
+        friend BigInteger operator-(BigInteger a, BigInteger b);
+        friend BigInteger operator-(BigInteger a, int b);
+        friend BigInteger operator-(int a, BigInteger b);
+        friend BigInteger operator--(BigInteger &a);
+        friend BigInteger operator-=(BigInteger &a, BigInteger b);
+        friend BigInteger operator-=(BigInteger &a, int b);
         //end operators
 };
 
@@ -80,6 +88,12 @@ BigInteger operator+(int a, BigInteger b);
 BigInteger operator++(BigInteger &a);
 BigInteger operator+=(BigInteger &a, BigInteger b);
 BigInteger operator+=(BigInteger &a, int b);
+BigInteger operator-(BigInteger a, BigInteger b);
+BigInteger operator-(BigInteger a, int b);
+BigInteger operator-(int a, BigInteger b);
+BigInteger operator--(BigInteger &a);
+BigInteger operator-=(BigInteger &a, BigInteger b);
+BigInteger operator-=(BigInteger &a, int b);
 //end operator prototypes
 
 #endif //BIGINTEGER_BIGINTEGER_H
