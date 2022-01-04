@@ -6,13 +6,13 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/User/Documents/GitHub/BigInteger/BigInteger.h
+C:/Users/User/Documents/GitHub/BigInteger/BigInteger.cpp
 bits/stdc++.h
--
-
-C:/Users/User/Documents/GitHub/BigInteger/main.cpp
-iostream
 -
 BigInteger.h
 C:/Users/User/Documents/GitHub/BigInteger/BigInteger.h
+
+C:/Users/User/Documents/GitHub/BigInteger/BigInteger.h
+bits/stdc++.h
+-
 

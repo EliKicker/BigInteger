@@ -140,6 +140,11 @@ bool operator<(BigInteger a, BigInteger b) {
     if (sgn_a == -1 && sgn_b != -1) {a.setSign(sgn_a); b.setSign(sgn_b); return true;}
     if (sgn_a != -1 && sgn_b == -1) {a.setSign(sgn_a); b.setSign(sgn_b); return false;}
     if (a.bigInt.size() != b.bigInt.size()) {a.setSign(sgn_a); b.setSign(sgn_b); return (sgn_a == -1 && sgn_b == -1) ? a.bigInt.size() > b.bigInt.size() : a.bigInt.size() < b.bigInt.size();}
+
+    //debug
+    std::cout << "a sign: " << sgn_a << "\nb sign: " << sgn_b << "\na size: " << a.bigInt.size() << "\nb size: " << b.bigInt.size() << std::endl;
+    //end debug
+
     for (int i = a.bigInt.size() - 1; i >= 0; i--) {
         if (a.bigInt[i] != b.bigInt[i]) {a.setSign(sgn_a); b.setSign(sgn_b); return (sgn_a == -1 && sgn_b == -1) ? a.bigInt[i] > b.bigInt[i] : a.bigInt[i] < b.bigInt[i];}
     }
@@ -253,45 +258,83 @@ BigInteger operator+(BigInteger a, BigInteger b) {
 }
 
 BigInteger operator+(BigInteger a, int b) {
-    return BigInteger();
+    return a + BigInteger(std::to_string(b));
 }
 
 BigInteger operator+(int a, BigInteger b) {
-    return BigInteger();
+    return BigInteger(std::to_string(a)) + b;
 }
 
-BigInteger operator++(BigInteger &a) {
-    return BigInteger();
+void operator+=(BigInteger &a, BigInteger b) {
+    a = a + b;
 }
 
-BigInteger operator+=(BigInteger &a, BigInteger b) {
-    return BigInteger();
-}
-
-BigInteger operator+=(BigInteger &a, int b) {
-    return BigInteger();
+void operator+=(BigInteger &a, int b) {
+    a = a + BigInteger(std::to_string(b));
 }
 
 BigInteger operator-(BigInteger a, BigInteger b) {
-    //Work in progess
+    int sign;
+    if (BigInteger::takeSign(a.bigInt) == 1) { // a -> positive
+        if (BigInteger::takeSign(b.bigInt) == -1) { // b -> negative
+            a.setSign(1);
+            b.setSign(1);
+            return a + b;
+        } else {
+            a.setSign(1);
+            b.setSign(1);
+            (a >= b) ? sign = 1 : sign = -1;
+        }
+    } else { // a -> negative
+        if (BigInteger::takeSign(b.bigInt) == 1) { // b -> positive
+            a.setSign(-1);
+            b.setSign(-1);
+            return b + a;
+        } else {
+            a.setSign(1);
+            b.setSign(1);
+            return b - a;
+        }
+    }
+
+    //Pad vectors to same length
+    while (a.bigInt.size() > b.bigInt.size()) b.bigInt.insert(b.bigInt.end(), 0);
+    while (b.bigInt.size() > a.bigInt.size()) a.bigInt.insert(a.bigInt.end(), 0);
+
+    BigInteger result;
+    for (int i = 0; i < a.bigInt.size(); i++) {
+        uint64 n = 0;
+        uint64 c = 0;
+        for (int j = 0; j < 64; j++) {
+            n += (((a.bigInt[i] >> j) & 1) ^ (~(b.bigInt[i] >> j) & 1) ^ c) << j;
+            c = ((((a.bigInt[i] >> j) & 1) | (~(b.bigInt[i] >> j) & 1)) & c) | (((a.bigInt[i] >> j) & 1) & (~(b.bigInt[i] >> j) & 1));
+        }
+        result.bigInt.insert(result.bigInt.end(), n);
+        if (i + 1 == a.bigInt.size() && c != 0) { result.setSign(1); result += 1; BigInteger::takeSign(result.bigInt); }
+    }
+
+    if (sign == -1) {
+        for (int i = 0; i < result.bigInt.size(); i++) {
+            result.bigInt[i] = result.bigInt[i] ^ 0xFFFFFFFFFFFFFFFF;
+        }
+    }
+
+    result.setSign(sign);
+    return result;
 }
 
 BigInteger operator-(BigInteger a, int b) {
-    return BigInteger();
+    return a + BigInteger(std::to_string(b));
 }
 
 BigInteger operator-(int a, BigInteger b) {
-    return BigInteger();
+    return BigInteger(std::to_string(a)) + b;
 }
 
-BigInteger operator--(BigInteger &a) {
-    return BigInteger();
+void operator-=(BigInteger &a, BigInteger b) {
+    a = a + b;
 }
 
-BigInteger operator-=(BigInteger &a, BigInteger b) {
-    return BigInteger();
-}
-
-BigInteger operator-=(BigInteger &a, int b) {
-    return BigInteger();
+void operator-=(BigInteger &a, int b) {
+    a = a + BigInteger(std::to_string(b));
 }

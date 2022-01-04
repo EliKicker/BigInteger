@@ -52,15 +52,13 @@ class BigInteger {
         friend BigInteger operator+(BigInteger a, BigInteger b);
         friend BigInteger operator+(BigInteger a, int b);
         friend BigInteger operator+(int a, BigInteger b);
-        friend BigInteger operator++(BigInteger &a);
-        friend BigInteger operator+=(BigInteger &a, BigInteger b);
-        friend BigInteger operator+=(BigInteger &a, int b);
+        friend void operator+=(BigInteger &a, BigInteger b);
+        friend void operator+=(BigInteger &a, int b);
         friend BigInteger operator-(BigInteger a, BigInteger b);
         friend BigInteger operator-(BigInteger a, int b);
         friend BigInteger operator-(int a, BigInteger b);
-        friend BigInteger operator--(BigInteger &a);
-        friend BigInteger operator-=(BigInteger &a, BigInteger b);
-        friend BigInteger operator-=(BigInteger &a, int b);
+        friend void operator-=(BigInteger &a, BigInteger b);
+        friend void operator-=(BigInteger &a, int b);
         //end operators
 };
 
@@ -85,15 +83,13 @@ bool operator>=(int a, BigInteger b);
 BigInteger operator+(BigInteger a, BigInteger b);
 BigInteger operator+(BigInteger a, int b);
 BigInteger operator+(int a, BigInteger b);
-BigInteger operator++(BigInteger &a);
-BigInteger operator+=(BigInteger &a, BigInteger b);
-BigInteger operator+=(BigInteger &a, int b);
+void operator+=(BigInteger &a, BigInteger b);
+void operator+=(BigInteger &a, int b);
 BigInteger operator-(BigInteger a, BigInteger b);
 BigInteger operator-(BigInteger a, int b);
 BigInteger operator-(int a, BigInteger b);
-BigInteger operator--(BigInteger &a);
-BigInteger operator-=(BigInteger &a, BigInteger b);
-BigInteger operator-=(BigInteger &a, int b);
+void operator-=(BigInteger &a, BigInteger b);
+void operator-=(BigInteger &a, int b);
 //end operator prototypes
 
 #endif //BIGINTEGER_BIGINTEGER_H
